@@ -194,6 +194,7 @@ const Jobs = () => {
               type="text"
               icon={<DownloadOutlined />}
               // onClick={() => downloadInvoice(record)}
+              onClick={() => window.open(`http://localhost:4000/api/job/view_invoice_by_id?id=${record.id}`, '_blank')}
             />
           </Tooltip>
         </>
