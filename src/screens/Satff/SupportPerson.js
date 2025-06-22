@@ -9,6 +9,7 @@ import {
   updateSupportStaffStatus,
   getSupportStaff,
 } from "../../api/supportStaffApi"; // adjust path if needed
+import { USER_ROLES } from "../../utils/constant";
 
 const { Title } = Typography;
 
@@ -38,7 +39,7 @@ const SupportPerson = () => {
         phone_number: values.phone,
         email: values.email,
         password: values.password,
-        role: 5,
+        role: USER_ROLES[values.role],
       };
 
       if (editData) {
