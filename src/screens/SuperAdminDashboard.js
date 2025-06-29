@@ -55,8 +55,9 @@ const SuperAdminDashboard = () => {
       setLoading(true);
       try {
         const res = await getDashboardJob(month, year);
-        const jobs = res.data?.jobs || [];
-        setStatusSummary(res.data?.statusSummary || {});
+        // const jobs = res.data?.jobs || [];
+        const jobs = res?.data?.data?.jobs || [];
+        setStatusSummary(res.data?.data?.statusSummary || {});
 
         const formatted = jobs.map((job) => {
           const date = new Date(job.created_at);
