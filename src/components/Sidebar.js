@@ -1,3 +1,4 @@
+// Sidebar.js
 import React, { useState } from "react";
 import { Layout, Menu } from "antd";
 import { useNavigate } from "react-router-dom";
@@ -22,9 +23,7 @@ const Sidebar = ({ selectedKey, onSelect }) => {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
 
-  const toggleSidebar = () => {
-    setCollapsed(!collapsed);
-  };
+  const toggleSidebar = () => setCollapsed(!collapsed);
 
   const handleMenuClick = ({ key }) => {
     if (key === "logout") {
@@ -35,26 +34,21 @@ const Sidebar = ({ selectedKey, onSelect }) => {
     }
 
     navigate(key);
-    if (onSelect) {
-      onSelect(key);
-    }
+    onSelect?.(key);
   };
 
   return (
     <>
-      {/* Custom CSS for selected item */}
       <style>
         {`
           .ant-menu-dark .ant-menu-item-selected {
-            background-color: #1890ff !important; /* Blue background */
+            background-color: #1890ff !important;
             color: #fff !important;
             font-weight: bold;
           }
-
           .ant-menu-dark .ant-menu-item-selected:hover {
             background-color: #40a9ff !important;
           }
-
           .ant-menu-dark .ant-menu-item:hover {
             background-color: #262626 !important;
           }
@@ -66,20 +60,28 @@ const Sidebar = ({ selectedKey, onSelect }) => {
         collapsed={collapsed}
         onCollapse={toggleSidebar}
         theme="dark"
-        style={{ display: "flex", flexDirection: "column" }}
+        width={250}
+        style={{
+          height: "100vh",
+          position: "fixed",
+          left: 0,
+          top: 0,
+          bottom: 0,
+          zIndex: 1000,
+        }}
       >
-       <div
-  className="logo"
-  style={{
-    backgroundColor: "#1890ff", // Ant Design blue
-    padding: "16px",
-    textAlign: "center",
-  }}
->
-  <h2 style={{ color: "white", margin: 0, fontSize: collapsed ? "160px" : "20px" }}>
-    {collapsed ? "App" : "Job Creation"}
-  </h2>
-</div>
+        <div
+          className="logo"
+          style={{
+            backgroundColor: "#1890ff",
+            padding: "16px",
+            textAlign: "center",
+          }}
+        >
+          <h2 style={{ color: "white", margin: 0, fontSize: collapsed ? "16px" : "20px" }}>
+            {collapsed ? "App" : "Job Creation"}
+          </h2>
+        </div>
 
         <div style={{ flex: 1, overflowY: "auto" }}>
           <Menu
@@ -91,7 +93,6 @@ const Sidebar = ({ selectedKey, onSelect }) => {
             <Menu.Item key="/dashboard" icon={<DashboardOutlined />}>
               Dashboard
             </Menu.Item>
-
             <SubMenu key="job" icon={<SolutionOutlined />} title="Job">
               <Menu.Item key="/jobs" icon={<FileDoneOutlined />}>
                 Jobs
@@ -116,14 +117,12 @@ const Sidebar = ({ selectedKey, onSelect }) => {
             <Menu.Item key="/areacode" icon={<GlobalOutlined />}>
               Area Code
             </Menu.Item>
-
             <Menu.Item key="/customers" icon={<CustomerServiceOutlined />}>
               Customers
             </Menu.Item>
           </Menu>
         </div>
 
-        {/* Fixed Logout Button */}
         <div style={{ padding: "12px" }}>
           <Menu theme="dark" mode="inline" onClick={handleMenuClick} selectable={false}>
             <Menu.Item key="logout" icon={<LogoutOutlined />} danger>

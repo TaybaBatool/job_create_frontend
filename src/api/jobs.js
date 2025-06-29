@@ -19,3 +19,7 @@ export const updateJobStatus = async (id, status) => {
 export const getInvoice = async (id) => {
   return await axios.get(`job/get_invoice?id=${id}`, { responseType: "blob" });
 };
+export const getDashboardJob = async (month, year) => {
+  return await axios.get(`/job/dashboard?month=${month}&year=${year}`);
+};
+

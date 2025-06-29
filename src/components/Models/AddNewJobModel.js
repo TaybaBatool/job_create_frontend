@@ -52,10 +52,8 @@ const AddNewJobModel = ({ visible, onSave, onClose, editingJob }) => {
         key: item.id,
         phone: item.phone_number,
       }));
-
       const front = formatted.filter((item) => item.role === 4);
       const back = formatted.filter((item) => item.role === 5);
-
       setFrontSupportList(front);
       setBackSupportList(back);
     } catch {
@@ -66,31 +64,29 @@ const AddNewJobModel = ({ visible, onSave, onClose, editingJob }) => {
   const fetchJobTypes = async () => {
     try {
       const res = await getJobTypes();
-      const activeJobs = res.data.data.jobType.filter(job => !job.is_deleted);
-      setJobTypes(activeJobs.map(item => ({ ...item, key: item.id })));
+      const activeJobs = res.data.data.jobType.filter((job) => !job.is_deleted);
+      setJobTypes(activeJobs.map((item) => ({ ...item, key: item.id })));
     } catch {
       message.error("Failed to load job types");
     }
   };
 
-useEffect(() => {
-  if (editingJob) {
-    const transformed = {
-      ...editingJob,
-      property_type: Number(editingJob.property_type), // Ensure number
-      customer_id: Number(editingJob.customer_id),
-      front_support: Number(editingJob.front_support),
-      back_support: Number(editingJob.back_support),
-      job_types: editingJob.job_types?.map((jt) => Number(jt)) || [],
-      visitig_date: editingJob.visitig_date ? moment(editingJob.visitig_date) : null,
-      time: editingJob.time ? moment(editingJob.time, "HH:mm:ss") : null,
-    };
-    form.setFieldsValue(transformed);
-  } else {
-    form.resetFields();
-  }
-}, [editingJob, form]);
-
+  useEffect(() => {
+    if (editingJob) {
+      const transformed = {
+        ...editingJob,
+        property_type: Number(editingJob.property_type),
+        customer_id: Number(editingJob.customer_id),
+        front_support: Number(editingJob.front_support),
+        back_support: Number(editingJob.back_support),
+        visitig_date: editingJob.visitig_date ? moment(editingJob.visitig_date) : null,
+        time: editingJob.time ? moment(editingJob.time, "HH:mm:ss") : null,
+      };
+      form.setFieldsValue(transformed);
+    } else {
+      form.resetFields();
+    }
+  }, [editingJob, form]);
 
   const handleSubmit = () => {
     form.validateFields()
@@ -99,19 +95,29 @@ useEffect(() => {
           ...values,
           time: values.time?.format("HH:mm:ss"),
           visitig_date: values.visitig_date?.format("YYYY-MM-DD"),
-          job_types: values.job_types,
+          job_types: values.job_types.map((jt) => ({
+            jobTypeId: jt.jobTypeId,
+            discount: Number(jt.discount),
+            additional_charges: Number(jt.additional_charges),
+          })),
+          total_discount: Number(values.total_discount),
+          total_additional_charges: Number(values.total_additional_charges),
+          total_amount_after_dis: Number(values.total_amount_after_dis),
         };
+
         onSave(formattedValues);
         form.resetFields();
       })
       .catch((info) => {
-        console.log("Validate Failed:", info);
+        console.log("Validation Failed:", info);
       });
   };
- const handleCancel = () => {
-  form.resetFields();
-    onClose(); 
+
+  const handleCancel = () => {
+    form.resetFields();
+    onClose();
   };
+
   return (
     <Modal
       title={editingJob ? "Edit Job" : "Add Job"}
@@ -121,6 +127,7 @@ useEffect(() => {
       width={800}
       destroyOnClose
       maskClosable={false}
+      bodyStyle={{ maxHeight: "70vh", overflowY: "auto" }} // Scrollable
     >
       <Form form={form} layout="vertical">
         <Form.Item
@@ -188,7 +195,7 @@ useEffect(() => {
               name="time"
               rules={[{ required: true }]}
             >
-              <TimePicker style={{ width: "100%" }} />
+              <TimePicker style={{ width: "100%" }} format="hh:mm A" use12Hours />
             </Form.Item>
           </Col>
         </Row>
@@ -232,7 +239,7 @@ useEffect(() => {
             <Form.Item
               label="Front Support"
               name="front_support"
-              rules={[{ required: true, message: "Please select front support" }]}
+              rules={[{ required: true }]}
             >
               <Select placeholder="Select front support" allowClear>
                 {frontSupportList.map((staff) => (
@@ -247,7 +254,7 @@ useEffect(() => {
             <Form.Item
               label="Back Support"
               name="back_support"
-              rules={[{ required: true, message: "Please select back support" }]}
+              rules={[{ required: true }]}
             >
               <Select placeholder="Select back support" allowClear>
                 {backSupportList.map((staff) => (
@@ -260,24 +267,90 @@ useEffect(() => {
           </Col>
         </Row>
 
-        <Form.Item
-          label="Job Types"
-          name="job_types"
-          rules={[{ required: true, message: "Please select at least one job type" }]}
-        >
-          <Select
-            mode="multiple"
-            placeholder="Select job types"
-            optionLabelProp="label"
-            allowClear
-          >
-            {jobTypes.map((job) => (
-              <Option key={job.id} value={job.id} label={job.title}>
-                {job.title}
-              </Option>
-            ))}
-          </Select>
-        </Form.Item>
+        {/* Job Type Entries */}
+        <Form.List name="job_types" rules={[{ required: true }]}>
+          {(fields, { add, remove }) => (
+            <>
+              {fields.map(({ key, name, ...restField }) => (
+                <Row gutter={16} key={key} align="middle">
+                  <Col span={8}>
+                    <Form.Item
+                      {...restField}
+                      label="Job Type"
+                      name={[name, "jobTypeId"]}
+                      rules={[{ required: true }]}
+                    >
+                      <Select placeholder="Select Job Type">
+                        {jobTypes.map((jt) => (
+                          <Option key={jt.id} value={jt.id}>
+                            {jt.name}
+                          </Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  </Col>
+                  <Col span={6}>
+                    <Form.Item
+                      {...restField}
+                      label="Discount"
+                      name={[name, "discount"]}
+                      rules={[{ required: true }]}
+                    >
+                      <Input type="number" />
+                    </Form.Item>
+                  </Col>
+                  <Col span={6}>
+                    <Form.Item
+                      {...restField}
+                      label="Additional Charges"
+                      name={[name, "additional_charges"]}
+                      rules={[{ required: true }]}
+                    >
+                      <Input type="number" />
+                    </Form.Item>
+                  </Col>
+                  <Col span={4}>
+                    <a onClick={() => remove(name)}>Remove</a>
+                  </Col>
+                </Row>
+              ))}
+              <Form.Item>
+                <a onClick={() => add()}>+ Add Job Type</a>
+              </Form.Item>
+            </>
+          )}
+        </Form.List>
+
+        {/* Totals */}
+        <Row gutter={16}>
+          <Col span={8}>
+            <Form.Item
+              label="Total Discount"
+              name="total_discount"
+              rules={[{ required: true }]}
+            >
+              <Input type="number" />
+            </Form.Item>
+          </Col>
+          <Col span={8}>
+            <Form.Item
+              label="Total Additional Charges"
+              name="total_additional_charges"
+              rules={[{ required: true }]}
+            >
+              <Input type="number" />
+            </Form.Item>
+          </Col>
+          <Col span={8}>
+            <Form.Item
+              label="Total Amount After Discount"
+              name="total_amount_after_dis"
+              rules={[{ required: true }]}
+            >
+              <Input type="number" />
+            </Form.Item>
+          </Col>
+        </Row>
       </Form>
     </Modal>
   );
