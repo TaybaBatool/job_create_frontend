@@ -52,8 +52,8 @@ const AddNewJobModel = ({ visible, onSave, onClose, editingJob }) => {
         key: item.id,
         phone: item.phone_number,
       }));
-      const front = formatted.filter((item) => item.role === 4);
-      const back = formatted.filter((item) => item.role === 5);
+      const front = formatted.filter((item) => item.role === 5);
+      const back = formatted.filter((item) => item.role === 4);
       setFrontSupportList(front);
       setBackSupportList(back);
     } catch {
@@ -97,6 +97,7 @@ const AddNewJobModel = ({ visible, onSave, onClose, editingJob }) => {
           visitig_date: values.visitig_date?.format("YYYY-MM-DD"),
           job_types: values.job_types.map((jt) => ({
             jobTypeId: jt.jobTypeId,
+            total_amount: Number(jt.price),
             discount: Number(jt.discount),
             additional_charges: Number(jt.additional_charges),
           })),
@@ -273,7 +274,7 @@ const AddNewJobModel = ({ visible, onSave, onClose, editingJob }) => {
             <>
               {fields.map(({ key, name, ...restField }) => (
                 <Row gutter={16} key={key} align="middle">
-                  <Col span={8}>
+                  <Col span={7}>
                     <Form.Item
                       {...restField}
                       label="Job Type"
@@ -289,7 +290,17 @@ const AddNewJobModel = ({ visible, onSave, onClose, editingJob }) => {
                       </Select>
                     </Form.Item>
                   </Col>
-                  <Col span={6}>
+                  <Col span={4}>
+                    <Form.Item
+                      {...restField}
+                      label="Price"
+                      name={[name, "price"]}
+                      rules={[{ required: true }]}
+                    >
+                      <Input type="number" />
+                    </Form.Item>
+                  </Col>
+                  <Col span={4}>
                     <Form.Item
                       {...restField}
                       label="Discount"
@@ -299,17 +310,17 @@ const AddNewJobModel = ({ visible, onSave, onClose, editingJob }) => {
                       <Input type="number" />
                     </Form.Item>
                   </Col>
-                  <Col span={6}>
+                  <Col span={4}>
                     <Form.Item
                       {...restField}
-                      label="Additional Charges"
+                      label="Add Charges"
                       name={[name, "additional_charges"]}
                       rules={[{ required: true }]}
                     >
                       <Input type="number" />
                     </Form.Item>
                   </Col>
-                  <Col span={4}>
+                  <Col span={3}>
                     <a onClick={() => remove(name)}>Remove</a>
                   </Col>
                 </Row>

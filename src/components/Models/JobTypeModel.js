@@ -26,13 +26,13 @@ const JobTypeModel = ({ visible, onSave, onClose, initialData }) => {
         <Form.Item label="Job Name" name="name" rules={[{ required: true, message: "Job name is required" }]}>
           <Input />
         </Form.Item>
-        <Form.Item
+        {/* <Form.Item
           label="Price"
           name="price"
           rules={[{ required: true, message: "Price is required" }]}
         >
           <InputNumber style={{ width: "100%" }} min={0} step={0.01} />
-        </Form.Item>
+        </Form.Item> */}
       </Form>
     </Modal>
   );

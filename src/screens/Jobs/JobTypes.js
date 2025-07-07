@@ -60,7 +60,7 @@ const JobType = () => {
 
   const columns = [
     { title: "Job Type Name", dataIndex: "name", key: "name" },
-    { title: "Price", dataIndex: "price", key: "price", render: (price) => `${price.toFixed(2)}` },
+    // { title: "Price", dataIndex: "price", key: "price", render: (price) => `${price.toFixed(2)}` },
     {
       title: "Actions",
       key: "actions",
