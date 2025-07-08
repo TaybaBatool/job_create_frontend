@@ -52,7 +52,7 @@ const JobDetails = () => {
 
   const jobTypeColumns = [
     { title: "Job Type", dataIndex: ["jobType", "name"] },
-    { title: "Price", dataIndex: ["jobType", "price"] },
+    { title: "Price", dataIndex: ["jobType", "total_amount"] },
     { title: "Discount", dataIndex: "discount" },
     { title: "Additional Charges", dataIndex: "additional_charges" },
   ];
